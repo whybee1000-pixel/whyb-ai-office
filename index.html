@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#120d1d">
+  <title>WHY B AI OFFICE</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <style>
+    :root{--bg:#0b0b10;--panel:#17151f;--purple:#8b5cf6;--blue:#4f8cff;--text:#f4f1fa;--muted:#aaa4b7;--border:#302a3b}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px system-ui,-apple-system,Segoe UI,sans-serif}
+    header{padding:22px 18px;background:linear-gradient(120deg,#211334,#101827);border-bottom:1px solid var(--border)}
+    header h1{margin:0;font-size:24px}header p{margin:5px 0 0;color:var(--muted)}
+    main{max-width:900px;margin:auto;padding:16px}
+    nav{display:flex;gap:8px;overflow:auto;margin-bottom:14px}
+    nav button,.btn{border:1px solid var(--border);background:#201b2b;color:var(--text);border-radius:11px;padding:10px 13px;cursor:pointer}
+    nav button.active,.btn.primary{background:var(--purple);border-color:var(--purple);color:white}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:15px;padding:15px;margin-bottom:12px}
+    .metric{font-size:26px;font-weight:700}.muted{color:var(--muted)}.small{font-size:13px}
+    h2{font-size:20px;margin:4px 0 12px}h3{margin:5px 0;font-size:16px}
+    input,select,textarea{width:100%;padding:11px;background:#0e0d14;border:1px solid var(--border);border-radius:10px;color:var(--text);margin:6px 0 10px}
+    label{font-size:14px;color:var(--muted)}.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1}
+    .task{display:flex;align-items:flex-start;gap:10px}.task input[type=checkbox]{width:auto;margin-top:4px}
+    .hidden{display:none}.pill{display:inline-block;background:#2c2140;border-radius:99px;padding:4px 9px;font-size:12px;color:#d7c4ff}
+    footer{color:var(--muted);text-align:center;font-size:12px;padding:24px}
+  </style>
+</head>
+<body>
+<header><h1>WHY B AI OFFICE</h1><p>WHY B CONSULTING · Virtual team workspace</p></header>
+<main>
+<nav id="nav">
+  <button class="active" data-tab="dashboard">Dashboard</button>
+  <button data-tab="workers">AI Workers</button>
+  <button data-tab="tasks">Tasks</button>
+  <button data-tab="report">CEO Report</button>
+  <button data-tab="shopify">Shopify</button>
+</nav>
+<section id="dashboard">
+  <h2>Dashboard</h2>
+  <div class="grid">
+    <div class="card"><div class="muted">Workers</div><div class="metric" id="workerCount">11</div></div>
+    <div class="card"><div class="muted">Tasks</div><div class="metric" id="taskCount">0</div></div>
+    <div class="card"><div class="muted">Completed</div><div class="metric" id="doneCount">0</div></div>
+    <div class="card"><div class="muted">Pending</div><div class="metric" id="pendingCount">0</div></div>
+  </div>
+  <div class="card"><h3>CEO quick note</h3><p class="muted">Tetapkan tugasan, semak hasil, dan sediakan laporan ringkas untuk CEO.</p><button class="btn primary" onclick="showTab('tasks')">Create task</button></div>
+</section>
+<section id="workers" class="hidden">
+  <h2>AI Workers</h2><div id="workerList" class="grid"></div>
+</section>
+<section id="tasks" class="hidden">
+  <h2>Task Manager</h2>
+  <div class="card">
+    <label>Nama tugasan</label><input id="taskTitle" placeholder="Contoh: Kajian pasaran eBook">
+    <label>Assign kepada</label><select id="taskWorker"></select>
+    <label>Nota / arahan</label><textarea id="taskNote" rows="3" placeholder="Arahan ringkas"></textarea>
+    <button class="btn primary" onclick="addTask()">Tambah tugasan</button>
+  </div>
+  <div id="taskList"></div>
+</section>
+<section id="report" class="hidden">
+  <h2>CEO Report</h2>
+  <div class="card"><p class="muted">Laporan berdasarkan data yang disimpan dalam aplikasi ini. Ia bukan data live Shopify.</p><button class="btn primary" onclick="makeReport()">Jana laporan</button><button class="btn" onclick="copyReport()">Salin</button><textarea id="reportText" rows="12" placeholder="Laporan akan muncul di sini"></textarea></div>
+</section>
+<section id="shopify" class="hidden">
+  <h2>Shopify Launch Checklist</h2>
+  <div class="card" id="shopChecklist"></div>
+  <p class="small muted">Checklist ini tidak menyambung API Shopify. Jangan masukkan kata laluan atau access token di sini.</p>
+</section>
+</main>
+<footer>Prototype · Data tersimpan pada peranti ini sahaja · AI workers ialah profil kerja, bukan agen autonomi</footer>
+<script>
+const workers=[
+["Adam","Team Leader / COO","Delegasi tugasan, koordinasi, laporan CEO"],
+["Nora","Market Researcher","Kajian pelanggan, trend, pesaing"],
+["Haziq","Creative Director","Konsep visual, identiti, idea kreatif"],
+["Hakim","Copywriter","Teks produk, eBook, iklan, caption"],
+["Ahmad","Marketing Manager","Strategi kempen dan pemasaran"],
+["Haiqal","SEO Specialist","Kata kunci, SEO produk, kandungan"],
+["Danish","Shopify Store Manager","Susun kedai dan checklist Shopify"],
+["Sarah","Customer Service","Draf FAQ dan respons pelanggan"],
+["Aiman","Finance & Analytics","Rekod ringkas, metrik, analisis"],
+["Irfan","Order & Fulfilment","Checklist pesanan dan penghantaran"],
+["Mira","Social Media Manager","Idea kandungan dan jadual media sosial"]
+];
+const checklist=["Pilih produk digital pertama","Sediakan fail produk (PDF)","Tulis penerangan produk","Tetapkan harga dan polisi","Uji halaman produk","Uji checkout / pembayaran","Sediakan pautan sokongan pelanggan","Sediakan satu kandungan promosi"];
+let tasks=JSON.parse(localStorage.getItem("whyb_tasks")||"[]");
+let checked=JSON.parse(localStorage.getItem("whyb_shop")||"[]");
+function save(){localStorage.setItem("whyb_tasks",JSON.stringify(tasks));localStorage.setItem("whyb_shop",JSON.stringify(checked));render()}
+function showTab(id){document.querySelectorAll("main section").forEach(s=>s.classList.add("hidden"));document.getElementById(id).classList.remove("hidden");document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.tab===id))}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+function render(){
+ document.getElementById("workerCount").textContent=workers.length;
+ document.getElementById("taskCount").textContent=tasks.length;
+ document.getElementById("doneCount").textContent=tasks.filter(t=>t.done).length;
+ document.getElementById("pendingCount").textContent=tasks.filter(t=>!t.done).length;
+ document.getElementById("workerList").innerHTML=workers.map(w=>`<div class="card"><h3>${w[0]}</h3><span class="pill">${w[1]}</span><p class="small muted">${w[2]}</p></div>`).join("");
+ document.getElementById("taskWorker").innerHTML=workers.map(w=>`<option>${w[0]} — ${w[1]}</option>`).join("");
+ document.getElementById("taskList").innerHTML=tasks.map((t,i)=>`<div class="card task"><input type="checkbox" ${t.done?"checked":""} onchange="toggleTask(${i})"><div style="flex:1"><h3>${escapeHtml(t.title)}</h3><div class="small muted">${escapeHtml(t.worker)} · ${escapeHtml(t.note||"Tiada nota")}</div></div><button class="btn" onclick="deleteTask(${i})">Padam</button></div>`).join("")||'<p class="muted">Belum ada tugasan.</p>';
+ document.getElementById("shopChecklist").innerHTML=checklist.map((c,i)=>`<div class="task"><input type="checkbox" ${checked.includes(i)?"checked":""} onchange="toggleCheck(${i})"><label>${c}</label></div>`).join("");
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function addTask(){let title=document.getElementById("taskTitle").value.trim();if(!title){alert("Isi nama tugasan dahulu.");return}tasks.unshift({title,worker:document.getElementById("taskWorker").value,note:document.getElementById("taskNote").value.trim(),done:false,created:new Date().toLocaleString()});document.getElementById("taskTitle").value="";document.getElementById("taskNote").value="";save()}
+function toggleTask(i){tasks[i].done=!tasks[i].done;save()}
+function deleteTask(i){if(confirm("Padam tugasan ini?")){tasks.splice(i,1);save()}}
+function toggleCheck(i){checked=checked.includes(i)?checked.filter(x=>x!==i):[...checked,i];save()}
+function makeReport(){let done=tasks.filter(t=>t.done),pending=tasks.filter(t=>!t.done);let date=new Date().toLocaleString("ms-MY");document.getElementById("reportText").value=`WHY B CONSULTING — LAPORAN CEO\nTarikh: ${date}\n\nJumlah pekerja profil: ${workers.length}\nJumlah tugasan: ${tasks.length}\nSelesai: ${done.length}\nBelum selesai: ${pending.length}\n\nTUGASAN SELESAI:\n${done.map(t=>"- "+t.title+" ("+t.worker+")").join("\n")||"- Tiada"}\n\nTUGASAN PENDING:\n${pending.map(t=>"- "+t.title+" ("+t.worker+")"+(t.note?" — "+t.note:"")).join("\n")||"- Tiada"}\n\nNota: Laporan ini dijana daripada data aplikasi setempat; metrik Shopify live tidak tersedia.`}
+function copyReport(){let text=document.getElementById("reportText").value;if(!text){alert("Jana laporan dahulu.");return}navigator.clipboard?.writeText(text).then(()=>alert("Laporan disalin."),()=>alert("Clipboard tidak tersedia; pilih dan salin teks secara manual."))}
+render();
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}))}
+</script>
+</body></html>
